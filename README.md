@@ -1,4 +1,4 @@
-# Perp.com Command Parser
+# PromptDeFi Command Parser
 
 This project is a simple web service that accepts user commands related to trading actions on perpetual futures markets and translates these commands into a structured JSON format. The translation is done using the OpenAI GPT model.
 

@@ -1,9 +1,11 @@
 const express = require("express");
 const { Configuration, OpenAIApi } = require("openai");
-const app = express();
+require("dotenv").config();
 
+const apiKey = process.env.OPENAI_API_KEY;
+const app = express();
 const configuration = new Configuration({
-  apiKey: "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",
+  apiKey,
 });
 const openai = new OpenAIApi(configuration);
 

@@ -1,49 +1,27 @@
 const express = require("express");
-const { Configuration, OpenAIApi } = require("openai");
-require("dotenv").config();
-
-const apiKey = process.env.OPENAI_API_KEY;
+const { translatePromptToJSON } = require("./src/ai");
+const { validateJSON } = require("./src/validator");
 const app = express();
-const configuration = new Configuration({
-  apiKey,
-});
-const openai = new OpenAIApi(configuration);
 
-app.use(express.json()); // for parsing application/json
+app.use(express.json());
 
 app.post("/parse-prompt", async (req, res) => {
   const prompt = req.body.prompt;
 
   try {
-    const response = await openai.createChatCompletion({
-      model: "gpt-3.5-turbo",
-      messages: [
-        {
-          role: "system",
-          content: `Translate the English command to JSON. It must contain 'action': 'add collateral', 'remove collateral', 'open position', or 'close position'. For 'add' or 'remove collateral', include 'collateral' and 'amount'. For 'open position', include 'market', 'type' and 'amount'. For 'close position', include 'market'.`,
-        },
-        { role: "user", content: `${prompt}` },
-      ],
-    });
-    const output = JSON.parse(response.data.choices[0].message.content);
-
-    // Validate output
-    const action = output.action;
-    if (
-      ![
-        "add collateral",
-        "remove collateral",
-        "open position",
-        "close position",
-      ].includes(action)
-    ) {
-      res.status(400).send({ error: "Invalid action" });
+    const response = await translatePromptToJSON(prompt);
+    if (!response) {
+      res.status(500).send({ error: "Failed to process the prompt" });
       return;
     }
 
-    // Additional validation based on action...
+    const validation = validateJSON(response);
+    if (!validation.valid) {
+      res.status(400).send({ error: validation.errors });
+      return;
+    }
 
-    res.send(output);
+    res.send(response);
   } catch (err) {
     res.status(500).send({ error: "Failed to process the prompt" });
   }

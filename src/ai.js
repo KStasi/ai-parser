@@ -6,27 +6,34 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
-// const systemPrompt = `Translate English commands into a JSON structure. 'action' can be 'add collateral', 'remove collateral', 'open position', or 'close position'. For 'add' or 'remove collateral', include 'collateral' (symbol) and 'amount'. For 'open position', include 'market' (symbol), 'type' (short or long), 'amount', and 'amountIn' ('base' or 'quote'). For 'close position', include 'market' (symbol). If the parameter isn't specified write null.`;
-// const systemPrompt = `Transform English commands into a JSON structure. The 'action' can be 'add collateral', 'remove collateral', 'open position', or 'close position'. When 'add' or 'remove collateral' is the action, 'collateral' (symbol) and 'amount' should be defined if clear from the context. For 'open position', 'market' (symbol), 'type' (short or long), 'amount', and 'amountIn' ('base' or 'quote') should be defined if clear from the context. For 'close position', 'market' (symbol) should be defined if clear from the context.`;
-const systemPrompt = `Translate English commands into a JSON structure. 'action' can be 'add collateral', 'remove collateral', 'open position', or 'close position'. For 'add' or 'remove collateral', include 'collateral' (symbol) and 'amount'. For 'open position', include 'market' (symbol), 'type' (short or long), 'amount', and 'amountIn' ('base' or 'quote'). For 'close position', include 'market' (symbol). If a parameter is not specified in the command, you must explicitly set its value to null.`;
-
-const translatePromptToJSON = async (prompt) => {
+const DEFAULT_SYSTEM_PROMPT =
+  "The response must always be JSON array or object. No comments! No extra text! Only JSON array or object on the output";
+const generateJSONFromPrompt = async (systemPrompt, userInput) => {
   try {
     const response = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
+      temperature: 0.2,
       messages: [
         {
           role: "system",
           content: systemPrompt,
         },
-        { role: "user", content: `${prompt}` },
+        {
+          role: "system",
+          content: DEFAULT_SYSTEM_PROMPT,
+        },
+        {
+          role: "user",
+          content: userInput,
+        },
       ],
       max_tokens: 200,
     });
     return JSON.parse(response.data.choices[0].message.content);
   } catch (err) {
+    console.error(err);
     return null;
   }
 };
 
-module.exports = { translatePromptToJSON };
+module.exports = { generateJSONFromPrompt };

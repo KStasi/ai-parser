@@ -1,5 +1,9 @@
 const express = require("express");
-const { translatePromptToJSON } = require("./src/ai");
+const {
+  preprocessJSON,
+  translatePromptToJSON,
+  reviewJSON,
+} = require("./src/processors");
 const { validateJSON } = require("./src/validator");
 const app = express();
 
@@ -9,19 +13,21 @@ app.post("/parse-prompt", async (req, res) => {
   const prompt = req.body.prompt;
 
   try {
-    const response = await translatePromptToJSON(prompt);
-    if (!response) {
+    const preprocessedJSON = await preprocessJSON(prompt);
+    const actionJSON = await translatePromptToJSON(preprocessedJSON);
+
+    if (!actionJSON) {
       res.status(500).send({ error: "Failed to process the prompt" });
       return;
     }
 
-    const validation = validateJSON(response);
-    if (!validation.valid) {
-      res.status(400).send({ error: validation.errors });
-      return;
-    }
+    // const validation = validateJSON(reviewedJSON);
+    // if (!validation.valid) {
+    //   res.status(400).send({ error: validation.errors });
+    //   return;
+    // }
 
-    res.send(response);
+    res.send(actionJSON);
   } catch (err) {
     res.status(500).send({ error: "Failed to process the prompt" });
   }

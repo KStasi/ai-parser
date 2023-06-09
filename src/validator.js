@@ -8,6 +8,7 @@ const allowedActions = [
 const allowedPositionTypes = ["long", "short"];
 const allowedAmountInTypes = ["base", "quote"];
 
+// TODO: update this checks to match the new actions
 const validateJSON = (outputJSON) => {
   const action = outputJSON.action;
 

@@ -53,7 +53,7 @@ The server is now running at `http://localhost:3000`.
 Send a POST request to the `/parse-prompt` endpoint with a JSON body containing the `prompt` field. For example:
 
 ```bash
-curl -X POST -H "Content-Type: application/json" -d '{"prompt":"Open a long position with 3 BTC"}' http://localhost:3000/parse-prompt
+curl -X POST -H "Content-Type: application/json" -d '{"prompt":"Swap 100 USDT to ETH. Wrap 0.1 ETH. Deposit 0.1 WETH to Aave. Borrow 50 USDT from Aave."}' http://localhost:3000/parse-prompt
 ```
 
 The service will respond with a JSON representation of the action described in the prompt.

@@ -1,12 +1,13 @@
 const { generateJSONFromPrompt } = require("./ai");
 
 const preprocessJSON = async (prompt) => {
-  const systemPrompt = `Parse the command into a JSON array where each element has exactly 2 fields: 'action' and 'details'. Action must be one of: 'SwapTokens', 'SendToken', 'LidoDeposit', 'WrapEth', 'AaveDeposit', 'AaveBorrow', 'AaveRepay', 'AaveWithdraw', 'Undefined'. For 'details', extract the full corresponding sentence of command related to the action.`;
+  const systemPrompt = `Parse the command into a JSON array where each element has exactly 2 fields: 'action' and 'details'. Action must be one of: 'CreatePortfolio', 'SwapTokens', 'SendToken', 'LidoDeposit', 'WrapEth', 'AaveDeposit', 'AaveBorrow', 'AaveRepay', 'AaveWithdraw', 'Undefined'. For 'details', extract the full corresponding sentence of command related to the action.`;
 
   return generateJSONFromPrompt(systemPrompt, prompt);
 };
 
 const actionPrompts = {
+  CreatePortfolio: `Translate into a JSON object with 'action', 'assets', 'stopLoss', and 'takeProfit'. 'assets' is an array of objects, with each object containing 'token' and 'amount'. 'stopLoss' and 'takeProfit' are percentages for portfolio management.`,
   SwapTokens: `Translate into a JSON object with 'action', 'tokenFrom', 'tokenTo', 'amountIn' and 'amountOut'. 'tokenFrom' and 'tokenTo' are token symbols; 'amountIn' and 'amountOut' is the amount of 'tokenFrom' and 'tokenTo' tokens respectfully.`,
   SendToken: `Translate into a JSON object with 'action', 'token', 'to', and 'amount'. 'token' is the symbol of the token to send, 'to' is the receiver's address and 'amount' is the amount of 'token' to send.`,
   LidoDeposit: `Translate into a JSON object with 'action' and 'amount'. 'amount' is the amount of ETH to deposit.`,

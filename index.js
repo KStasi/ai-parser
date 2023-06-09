@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const {
   preprocessJSON,
   translatePromptToJSON,
@@ -8,6 +9,7 @@ const { validateJSON } = require("./src/validator");
 const app = express();
 
 app.use(express.json());
+app.use(cors())
 
 app.post("/parse-prompt", async (req, res) => {
   const prompt = req.body.prompt;

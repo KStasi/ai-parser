@@ -1,0 +1,8 @@
+app = "Prompt Defi"
+
+[build]
+  builder = "heroku/buildpacks:20"
+
+[[services]]
+  internal_port = 3000
+  protocol = "tcp"
